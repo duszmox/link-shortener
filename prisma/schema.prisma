@@ -20,7 +20,7 @@ model ShortLink {
   createdAt DateTime @default(now())
 
   url       String @db.VarChar(2048)
-  
+   
   slug String @unique
 
   @@index([slug])
