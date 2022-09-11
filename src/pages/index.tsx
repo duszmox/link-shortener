@@ -41,11 +41,21 @@ const Home: NextPage = () => {
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-    setIsLoading(true)
-    const url = e.currentTarget.url.value.startWith("http://") || e.currentTarget.url.value.startWith("https://") ? e.currentTarget.url.value : "https://" + e.currentTarget.url.value
+    setIsLoading(true);
+    const nurl: string =
+      long.startsWith("http") || long.startsWith("https")
+        ? long
+        : `https://${long}`;
+    //if nurl mateches https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)
+
+    if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(nurl)) {
+      alert("invalid url")
+      setIsLoading(false)
+      return
+    }
     const res = await fetch("/api/add-url", {
       method: "POST",
-      body: JSON.stringify({ url: url }),
+      body: JSON.stringify({ url: nurl }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -55,11 +65,10 @@ const Home: NextPage = () => {
       throw new Error(data.message);
       alert(data.message);
     }
-    console.log(data.link)
+    console.log(data.link);
     setUrl(data.link);
-    setLong("")
-    setIsLoading(false)
-    
+    setLong("");
+    setIsLoading(false);
   };
   //if loading put a gray box on top of the form
   const loading = isLoading ? (
@@ -107,7 +116,8 @@ const Home: NextPage = () => {
                 setLong(e.target.value);
               }}
               value={long}
-              pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+              
+              
             ></input>
             <button className="bg-gray-100 hover:bg-gray-300  transition-all	ease-in-out  rounded-md  text-black outline-none p-4 w-full font-RobotoMono mt-4">
               Shorten!
