@@ -42,9 +42,10 @@ const Home: NextPage = () => {
   ) => {
     e.preventDefault();
     setIsLoading(true)
+    const url = e.currentTarget.url.value.startWith("http://") || e.currentTarget.url.value.startWith("https://") ? e.currentTarget.url.value : "https://" + e.currentTarget.url.value
     const res = await fetch("/api/add-url", {
       method: "POST",
-      body: JSON.stringify({ url: e.currentTarget.url.value }),
+      body: JSON.stringify({ url: url }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -106,7 +107,7 @@ const Home: NextPage = () => {
                 setLong(e.target.value);
               }}
               value={long}
-              pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+              pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
             ></input>
             <button className="bg-gray-100 hover:bg-gray-300  transition-all	ease-in-out  rounded-md  text-black outline-none p-4 w-full font-RobotoMono mt-4">
               Shorten!
