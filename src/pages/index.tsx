@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import { useState } from "react";
+import { ReactElement, ReactNode, useState } from "react";
 
 
 
@@ -35,11 +35,13 @@ const shortenedUrl = (url: string) => {
 const Home: NextPage = () => {
   const [url, setUrl ] = useState("")
   const [long , setLong] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
+    setIsLoading(true)
     const res = await fetch("/api/add-url", {
       method: "POST",
       body: JSON.stringify({ url: e.currentTarget.url.value }),
@@ -55,8 +57,16 @@ const Home: NextPage = () => {
     console.log(data.link)
     setUrl(data.link);
     setLong("")
+    setIsLoading(false)
     
   };
+  //if loading put a gray box on top of the form
+  const loading = isLoading ? (
+    <div className="absolute top-0 left-0 w-full h-full bg-gray-200 opacity-50 z-10"></div>
+  ) : (
+    <></>
+  );
+  
 
   return (
     <div className={styles.container}>
@@ -67,6 +77,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
+        <div>{loading}</div>
         <h1 className="text-3xl font-bold text-center uppercase mb-16">
           cock.hu <br />{" "}
           <p className="text-xl p-2">The world&apos;s best link shortener </p>
