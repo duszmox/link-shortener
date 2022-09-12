@@ -10,8 +10,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
   //get the url string and slug string from the body
   const { url } = req.body;
+  let { slug } = req.body;
   //generate 4 charachter slug with numbers an upper and lowercase letters
-  let slug =  Math.random().toString(36).substring(2, 6);
+  slug =  slug == null ? Math.random().toString(36).substring(2, 6) : slug;
   if (!url || typeof url !== "string") {
     return res.status(400).json({ message: "Missing url" });
   }

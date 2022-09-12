@@ -3,11 +3,9 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { ReactElement, ReactNode, useState } from "react";
 
-
-
 const shortenedUrl = (url: string) => {
   if (url === "") {
-    return <></>
+    return <></>;
   }
   return (
     <div className="text-center">
@@ -27,35 +25,41 @@ const shortenedUrl = (url: string) => {
       </button>
     </div>
   );
-
-}
-  
-  
+};
 
 const Home: NextPage = () => {
-  const [url, setUrl ] = useState("")
-  const [long , setLong] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [url, setUrl] = useState("");
+  const [long, setLong] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [Customize, setCustomize] = useState("hidden");
+  const [slug, setSlug] = useState("");
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     const nurl: string =
       long.startsWith("http") || long.startsWith("https")
         ? long
         : `https://${long}`;
-    //if nurl mateches https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)
 
-    if (!/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(nurl)) {
-      alert("invalid url")
-      setIsLoading(false)
-      return
+    if (
+      !/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(
+        nurl
+      )
+    ) {
+      alert("invalid url");
+      setIsLoading(false);
+      return;
+    }
+    if (!/^[A-Za-z1-9-]{1,15}$/.test(slug) && slug !== "") {
+      alert("invalid slug");
+      setIsLoading(false);
+      return;
     }
     const res = await fetch("/api/add-url", {
       method: "POST",
-      body: JSON.stringify({ url: nurl }),
+      body: JSON.stringify({ url: nurl,
+      slug: slug == "" ? null : slug }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -76,7 +80,6 @@ const Home: NextPage = () => {
   ) : (
     <></>
   );
-  
 
   return (
     <div className={styles.container}>
@@ -92,7 +95,7 @@ const Home: NextPage = () => {
           cock.hu <br />{" "}
           <p className="text-xl p-2">The world&apos;s best link shortener </p>
         </h1>
-        <div className="rounded-lg border-gray-600  border-2 p-8">
+        <div className="rounded-lg border-gray-600 min-w-[350px] max-w-[600px] w-5/6  border-2 p-8">
           <p className="text-center font-bold p-4">
             Enter the link you want to shorten!
           </p>
@@ -104,7 +107,7 @@ const Home: NextPage = () => {
               htmlFor="url"
               className="text-gray-400 block pl-2 uppercase pb-1"
             >
-              Url
+              Url <p className="m-0 p-0 inline text-[0.5rem]">(required)</p>
             </label>
             <input
               type={"text"}
@@ -116,10 +119,46 @@ const Home: NextPage = () => {
                 setLong(e.target.value);
               }}
               value={long}
-              
-              
             ></input>
-            <button className="bg-gray-100 hover:bg-gray-300  transition-all	ease-in-out  rounded-md  text-black outline-none p-4 w-full font-RobotoMono mt-4">
+            <button
+              className="font-bold text-xs text-right w-full underline font-RobotoMono"
+              type="button"
+              onClick={() => {
+                if (Customize === "hidden") {
+                  setCustomize("");
+                } else {
+                  setCustomize("hidden");
+                }
+              }}
+            >
+              Customize
+            </button>
+            <div className={Customize}>
+              <label
+                htmlFor="slug"
+                className="text-gray-400 block pl-2 uppercase pb-1"
+              >
+                Slug
+              </label>
+
+            <input
+              type={"text"}
+              className={
+                "bg-gray-800 rounded-md outline-none p-4 w-full font-RobotoMono" +
+                " " 
+              }
+              placeholder="Custom slug..."
+              name="slug"
+              onChange={(e) => {
+                setSlug(e.target.value);
+              }}
+              value={slug}
+            ></input>
+            </div>
+            <button
+              type="submit"
+              className="bg-gray-100 hover:bg-gray-300  transition-all	ease-in-out  rounded-md  text-black outline-none p-4 w-full font-RobotoMono mt-4"
+            >
               Shorten!
             </button>
           </form>
