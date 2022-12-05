@@ -1086,6 +1086,11 @@
     "has" "^1.0.3"
     "side-channel" "^1.0.4"
 
+"ip2long@^0.0.1":
+  "integrity" "sha512-LhK9wdnTlCaDT7oRMsbyiQUhhXcwxfqbqaZmiGy+u8kEcpmYXMega7Rtpjk1zspUQQQtJisQjfJtWQWyRdcNeg=="
+  "resolved" "https://registry.npmjs.org/ip2long/-/ip2long-0.0.1.tgz"
+  "version" "0.0.1"
+
 "is-bigint@^1.0.1":
   "integrity" "sha512-zB9CruMamjym81i2JZ3UMn54PKGsQzsJeo6xvN3HJJ4CAsQNB6iRutp2To77OfCNuoxspsIhzaPoO1zyCEhFOg=="
   "resolved" "https://registry.npmjs.org/is-bigint/-/is-bigint-1.0.4.tgz"

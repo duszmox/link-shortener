@@ -33,6 +33,7 @@ const Home: NextPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [Customize, setCustomize] = useState("hidden");
   const [slug, setSlug] = useState("");
+  const [blocked, setBlocked] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -59,7 +60,8 @@ const Home: NextPage = () => {
     const res = await fetch("/api/add-url", {
       method: "POST",
       body: JSON.stringify({ url: nurl,
-      slug: slug == "" ? null : slug }),
+      slug: slug == "" ? null : slug,
+      blocked: blocked}),
       headers: {
         "Content-Type": "application/json",
       },
@@ -141,19 +143,36 @@ const Home: NextPage = () => {
                 Slug
               </label>
 
-            <input
-              type={"text"}
-              className={
-                "bg-gray-800 rounded-md outline-none p-4 w-full font-RobotoMono" +
-                " " 
-              }
-              placeholder="Custom slug..."
-              name="slug"
-              onChange={(e) => {
-                setSlug(e.target.value);
-              }}
-              value={slug}
-            ></input>
+              <input
+                type={"text"}
+                className={
+                  "bg-gray-800 rounded-md outline-none p-4 w-full font-RobotoMono" +
+                  " "
+                }
+                placeholder="Custom slug..."
+                name="slug"
+                onChange={(e) => {
+                  setSlug(e.target.value);
+                }}
+                value={slug}
+              ></input>
+              <div className="mt-4">
+                <label
+                  htmlFor="youKnowWhat"
+                  className="text-gray-400 inline-block pl2 uppercase pb-1 "
+                >
+                  Restrict from malicious IPs
+                </label>
+                <input
+                  type="checkbox"
+                  name="youKnowWhat"
+                  id="youKnowWhat"
+                  className="rounded-md ml-3 h-4 w-4 align-baseline"
+                  onChange={(e) => {
+                    setBlocked(e.target.checked);
+                  }}
+                />
+              </div>
             </div>
             <button
               type="submit"

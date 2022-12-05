@@ -3,6 +3,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../db/client";
 
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   //make it post
   if (req.method !== "POST") {
@@ -11,8 +12,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   //get the url string and slug string from the body
   const { url } = req.body;
   let { slug } = req.body;
+  let { blocked } = req.body;
+
+  
+
   //generate 4 charachter slug with numbers an upper and lowercase letters
-  slug =  slug == null ? Math.random().toString(36).substring(2, 6) : slug;
+  slug = slug == null ? Math.random().toString(36).substring(2, 6) : slug;
   if (!url || typeof url !== "string") {
     return res.status(400).json({ message: "Missing url" });
   }
@@ -50,10 +55,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       data: {
         slug: slug,
         url: url,
+        blocked: blocked,
       },
     })
     .then(() => {
-      return res.status(200).json({ message: "Short link created", link: "https://" +req.headers.host + "/" + slug });
+      return res
+        .status(200)
+        .json({
+          message: "Short link created",
+          link: "https://" + req.headers.host + "/" + slug,
+        });
     })
     .catch((err) => {
       console.log(err);

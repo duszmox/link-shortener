@@ -23,6 +23,8 @@ model ShortLink {
    
   slug String @unique
 
+  blocked Boolean @default(false)
+
   @@index([slug])
 
 } 
