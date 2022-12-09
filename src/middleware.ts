@@ -1,4 +1,5 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+
 export async function middleware(req: NextRequest, ev: NextFetchEvent) {
   if (
     req.nextUrl.pathname.startsWith("/api/") ||
@@ -27,6 +28,20 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
   }
 
   if (data?.url) {
-    return NextResponse.redirect(data.url);
+    if (data?.blocked) {
+      // set the cookie to url
+      const cookie = `url=${data.url}`;
+      return NextResponse.redirect(`${req.nextUrl.origin}/captcha`, {
+        headers: {
+          "Set-Cookie": cookie,
+        },
+      });
+      
+    }
+    else {
+      return NextResponse.redirect(data
+        .url);
+    }
+    // return NextResponse.redirect(data.url);
   }
 }
