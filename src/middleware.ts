@@ -1,5 +1,4 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-import axios from "axios";
 export async function middleware(req: NextRequest, ev: NextFetchEvent) {
   if (
     req.nextUrl.pathname.startsWith("/api/") ||
@@ -11,14 +10,16 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
   }
 
   const slug = req.nextUrl.pathname.split("/").pop();
-  // const data = await (
-  //   await fetch(`${req.nextUrl.origin}/api/get-url/${slug}`)
-  // ).json();
-  const data = await axios
-    .get(`${req.nextUrl.origin}/api/get-url/${slug}`)
-    .then(async (res) => {
-      return await res.data.json();
-    });
+  let data = null;
+  try {
+     data = await (
+    await fetch(`${req.nextUrl.origin}/api/get-url/${slug}`)
+  ).json();
+  } catch (e) {
+    console.log(e);
+    return NextResponse.redirect( new URL("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+  }
+ 
   // get the users ip
   if (data.blocked) {
     const isBlocked = await fetch(`${req.nextUrl.origin}/api/is-blocked`, {
