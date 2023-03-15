@@ -10,9 +10,16 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
   }
 
   const slug = req.nextUrl.pathname.split("/").pop();
-  const data = await (
-    await fetch(`${req.nextUrl.origin}/api/get-url/${slug}`)
-  ).json();
+  // const data = await (
+  //   await fetch(`${req.nextUrl.origin}/api/get-url/${slug}`)
+  // ).json();
+  const data = {
+    id: "cl9dzqjhh001109guk9dscozd",
+    createdAt: "2022-10-18T09:16:12.197Z",
+    url: "https://docs.google.com/document/d/1sZeV06dxRdHWQxyGp3LSF6IR_aV9T1_3hIxNre1xj98/edit?usp=sharing",
+    slug: "office",
+    blocked: false,
+  };
   // get the users ip
   if (data.blocked) {
     const isBlocked = await fetch(`${req.nextUrl.origin}/api/is-blocked`, {
