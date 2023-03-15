@@ -1,5 +1,4 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
-
 export async function middleware(req: NextRequest, ev: NextFetchEvent) {
   if (
     req.nextUrl.pathname.startsWith("/api/") ||
@@ -23,7 +22,7 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
       return res.json();
     });
     if (isBlocked) {
-      return NextResponse.redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+      return NextResponse.redirect(new URL("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
     }
   }
 
@@ -39,8 +38,7 @@ export async function middleware(req: NextRequest, ev: NextFetchEvent) {
       
     }
     else {
-      return NextResponse.redirect(data
-        .url);
+      return NextResponse.redirect(new URL(data.url).href);
     }
     // return NextResponse.redirect(data.url);
   }
