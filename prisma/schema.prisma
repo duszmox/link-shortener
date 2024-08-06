@@ -2,30 +2,23 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
-
-
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mongodb"
+  url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
-
 }
 
 model ShortLink {
-  id        String @id @default(cuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())
 
-  url       String @db.VarChar(2048)
-   
+  url String
+
   slug String @unique
 
   blocked Boolean @default(false)
-
-  @@index([slug])
-
-} 
- 
+}
