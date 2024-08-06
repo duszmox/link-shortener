@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.2",
-    "@types/node": "^18.7.9",
+    "@types/node": "^20.0.0",
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
     "@types/react-google-recaptcha": "^2.1.5",

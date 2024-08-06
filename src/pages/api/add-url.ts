@@ -3,7 +3,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../db/client";
 
-
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   //make it post
   if (req.method !== "POST") {
@@ -13,9 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { url } = req.body;
   let { slug } = req.body;
   let { blocked } = req.body;
-
-  
-
+  console.log("making short link");
   //generate 4 charachter slug with numbers an upper and lowercase letters
   slug = slug == null ? Math.random().toString(36).substring(2, 6) : slug;
   if (!url || typeof url !== "string") {
@@ -37,6 +34,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
   if (existingSlug) {
+    console.log("slug exists");
     while (existingSlug) {
       slug = Math.random().toString(36).substring(2, 6);
       existingSlug = await prisma.shortLink.findUnique({
@@ -47,6 +45,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   }
 
+  console.log("slug: ", slug);
   //current head url
 
   // upload the url to the database
@@ -59,12 +58,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       },
     })
     .then(() => {
-      return res
-        .status(200)
-        .json({
-          message: "Short link created",
-          link: "https://" + req.headers.host + "/" + slug,
-        });
+      console.log("short link created");
+      return res.status(200).json({
+        message: "Short link created",
+        link: "https://" + req.headers.host + "/" + slug,
+      });
     })
     .catch((err) => {
       console.log(err);
