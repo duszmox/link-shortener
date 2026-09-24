@@ -1,4 +1,5 @@
 import { createLink, URL_PATTERN } from "@/lib/links";
+import { checkUrlSafety } from "@/lib/url-safety";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -9,6 +10,22 @@ export async function POST(req: Request) {
   }
   if (!URL_PATTERN.test(url)) {
     return Response.json({ message: "Invalid url" }, { status: 400 });
+  }
+
+  // Let the link through if TypeSafe is unreachable.
+  try {
+    const safety = await checkUrlSafety(url);
+    console.log("url safety: ", safety);
+    if (safety.blocked) {
+      return Response.json(
+        {
+          message: `This url looks like a ${safety.reason} site and can't be shortened`,
+        },
+        { status: 403 }
+      );
+    }
+  } catch (err) {
+    console.log("url safety check failed: ", err);
   }
 
   try {
