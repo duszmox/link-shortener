@@ -17,6 +17,8 @@ export type UrlSafety = {
 export const checkUrlSafety = async (url: string): Promise<UrlSafety> => {
   const res = await fetch(TYPESAFE_URL, {
     method: "POST",
+    //give up after 5s so a slow typesafe doesn't hang link creation
+    signal: AbortSignal.timeout(5000),
     headers: {
       Authorization: `Bearer ${process.env.TYPESAFE_API_KEY}`,
       "Content-Type": "application/json",
