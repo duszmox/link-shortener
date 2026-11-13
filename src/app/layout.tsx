@@ -9,6 +9,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { clerkAppearance } from "@/lib/clerk-appearance";
+import { CookieBanner, CookieSettingsButton } from "./cookie-banner";
 import "./globals.css";
 
 const robotoMono = Roboto_Mono({
@@ -48,6 +49,17 @@ function Header() {
   );
 }
 
+function Footer() {
+  return (
+    <footer className="flex items-center justify-center gap-4 px-8 pb-8 font-RobotoMono text-xs text-gray-400">
+      <Link href="/legal/cookies" className="underline">
+        Cookie policy
+      </Link>
+      <CookieSettingsButton />
+    </footer>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -57,6 +69,8 @@ export default function RootLayout({
         <body>
           <Header />
           {children}
+          <Footer />
+          <CookieBanner />
         </body>
       </html>
     </ClerkProvider>

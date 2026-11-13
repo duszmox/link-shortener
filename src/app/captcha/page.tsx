@@ -3,9 +3,13 @@
 import { useEffect, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import Cookies from "js-cookie";
+import { useConsent } from "@/lib/cookie-consent";
 
 export default function Captcha() {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const consent = useConsent();
+  // Google's script (and its cookies) only loads with the visitor's consent
+  const recaptchaAllowed = consent?.recaptcha === true;
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -21,21 +25,27 @@ export default function Captcha() {
 
   // autosubmit the form and redirect to the url from the cookie
   useEffect(() => {
+    // Wait until the consent cookie has been read on the client
+    if (consent === undefined) return;
     const url = Cookies.get("url");
-    if (recaptchaRef.current && url) {
+    if (!url) return;
+    if (recaptchaAllowed) {
+      if (!recaptchaRef.current) return;
       recaptchaRef.current.execute();
-      window.location.href = url;
     }
-  }, []);
+    window.location.href = url;
+  }, [consent, recaptchaAllowed]);
 
   return (
     <form onSubmit={handleSubmit}>
-      <ReCAPTCHA
-        ref={recaptchaRef}
-        size="invisible"
-        sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-        onChange={onReCAPTCHAChange}
-      />
+      {recaptchaAllowed && (
+        <ReCAPTCHA
+          ref={recaptchaRef}
+          size="invisible"
+          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+          onChange={onReCAPTCHAChange}
+        />
+      )}
       <button type="submit">Loading...</button>
     </form>
   );
