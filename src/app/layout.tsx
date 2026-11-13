@@ -8,6 +8,7 @@ import {
   SignUpButton,
   UserButton,
 } from "@clerk/nextjs";
+import { clerkAppearance } from "@/lib/clerk-appearance";
 import "./globals.css";
 
 const robotoMono = Roboto_Mono({
@@ -51,7 +52,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={clerkAppearance}>
       <html lang="en" className={robotoMono.variable}>
         <body>
           <Header />

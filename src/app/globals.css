@@ -4,11 +4,40 @@
   --font-RobotoMono: var(--font-roboto-mono), monospace;
 }
 
+/* Tokens for the Clerk sign-in / user UI (see src/lib/clerk-appearance.ts). */
+:root {
+  --auth-background: #ffffff;
+  --auth-foreground: #000000;
+  --auth-muted-foreground: #6a7282;
+  --auth-neutral: #000000;
+  --auth-border: #d1d5dc;
+  --auth-input: #f3f4f6;
+  --auth-primary: #101828;
+  --auth-primary-hover: #364153;
+  --auth-primary-foreground: #ffffff;
+  --auth-danger: #e7000b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --auth-background: #000000;
+    --auth-foreground: #ffffff;
+    --auth-muted-foreground: #99a1af;
+    --auth-neutral: #ffffff;
+    --auth-border: #4a5565;
+    --auth-input: #1e2939;
+    --auth-primary: #f3f4f6;
+    --auth-primary-hover: #d1d5dc;
+    --auth-primary-foreground: #000000;
+    --auth-danger: #ff6467;
+  }
+}
+
 @layer base {
   /* Keep Tailwind v3 defaults that v4 changed */
   input::placeholder,
   textarea::placeholder {
-    color: var(--color-gray-400);
+    color: #99a1af;
   }
 
   button:not(:disabled),
