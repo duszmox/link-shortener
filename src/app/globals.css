@@ -62,6 +62,57 @@
     box-sizing: border-box;
   }
 
+  /* Boxy checkbox with a pixel-art check. Sizes are whole pixels and the
+     check is a 7x6 grid drawn at 2px per cell so it never blurs. */
+  input[type="checkbox"] {
+    appearance: none;
+    flex-shrink: 0;
+    display: inline-grid;
+    place-content: center;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    border: 2px solid var(--auth-muted-foreground);
+    border-radius: 0;
+    background: transparent;
+    vertical-align: middle;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"]::before {
+    content: "";
+    width: 14px;
+    height: 12px;
+    background-color: var(--auth-background);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 6' shape-rendering='crispEdges'%3E%3Cpath d='M6 0h1v1H6zM5 1h2v1H5zM0 2h1v1H0zM4 2h2v1H4zM0 3h2v1H0zM3 3h2v1H3zM1 4h3v1H1zM2 5h1v1H2z'/%3E%3C/svg%3E")
+      center / 14px 12px no-repeat;
+    image-rendering: pixelated;
+    visibility: hidden;
+  }
+
+  input[type="checkbox"]:checked {
+    border-color: var(--auth-foreground);
+    background-color: var(--auth-foreground);
+  }
+
+  input[type="checkbox"]:checked::before {
+    visibility: visible;
+  }
+
+  input[type="checkbox"]:hover:not(:disabled) {
+    border-color: var(--auth-foreground);
+  }
+
+  input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--auth-foreground);
+    outline-offset: 2px;
+  }
+
+  input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   @media (prefers-color-scheme: dark) {
     html {
       color-scheme: dark;

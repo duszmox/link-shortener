@@ -146,7 +146,6 @@ export function LinkCard({
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            className="h-4 w-4"
             checked={link.blocked}
             disabled={busy}
             onChange={(e) => {
@@ -160,7 +159,6 @@ export function LinkCard({
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
-              className="h-4 w-4"
               checked={link.trackClicks}
               disabled={busy}
               onChange={(e) => {

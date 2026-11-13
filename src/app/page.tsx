@@ -152,7 +152,7 @@ export default function Home() {
                   type="checkbox"
                   name="youKnowWhat"
                   id="youKnowWhat"
-                  className="rounded-md ml-3 h-4 w-4 align-baseline"
+                  className="ml-3"
                   onChange={(e) => setBlocked(e.target.checked)}
                 />
               </div>
