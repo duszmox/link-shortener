@@ -61,3 +61,18 @@ export const checkUrlSafety = async (url: string): Promise<UrlSafety> => {
   if (porn > BLOCK_THRESHOLD) return { blocked: true, reason: "porn", scam, porn };
   return { blocked: false, scam, porn };
 };
+
+// Returns why a url can't be shortened, or null if it's allowed.
+// Lets the link through if TypeSafe is unreachable.
+export async function getUrlBlockMessage(url: string): Promise<string | null> {
+  try {
+    const safety = await checkUrlSafety(url);
+    console.log("url safety: ", safety);
+    if (safety.blocked) {
+      return `This url looks like a ${safety.reason} site and can't be shortened`;
+    }
+  } catch (err) {
+    console.log("url safety check failed: ", err);
+  }
+  return null;
+}

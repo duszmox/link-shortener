@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-
-const URL_PATTERN =
-  /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
+import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
+import { getSlugError, normalizeUrl, URL_PATTERN } from "@/lib/slug";
 
 function ShortenedUrl({ url }: { url: string }) {
+  const { isSignedIn } = useAuth();
   if (url === "") return null;
   return (
     <div className="text-center">
@@ -19,6 +20,19 @@ function ShortenedUrl({ url }: { url: string }) {
       >
         Click here to copy to clipboard
       </button>
+      <p className="text-xs text-gray-400 pb-4">
+        {isSignedIn ? (
+          <>
+            Saved to{" "}
+            <Link href="/dashboard" className="underline">
+              your links
+            </Link>
+            , where you can manage it.
+          </>
+        ) : (
+          "Sign in to keep track of your links and edit them later."
+        )}
+      </p>
     </div>
   );
 }
@@ -34,15 +48,16 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    const nurl = long.startsWith("http") ? long : `https://${long}`;
+    const nurl = normalizeUrl(long);
 
     if (!URL_PATTERN.test(nurl)) {
       alert("invalid url");
       setIsLoading(false);
       return;
     }
-    if (!/^[A-Za-z1-9-]{1,15}$/.test(slug) && slug !== "") {
-      alert("invalid slug");
+    const slugError = slug === "" ? null : getSlugError(slug);
+    if (slugError) {
+      alert(slugError);
       setIsLoading(false);
       return;
     }

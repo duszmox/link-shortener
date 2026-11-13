@@ -18,5 +18,7 @@ export async function GET(
       }
     );
   }
-  return Response.json(data);
+  // Owner and click stats are private
+  const { id, createdAt, url, blocked } = data;
+  return Response.json({ id, createdAt, url, slug: data.slug, blocked });
 }

@@ -19,4 +19,16 @@ model ShortLink {
   slug String @unique
 
   blocked Boolean @default(false)
+
+  // Clerk user id of the owner; null for links created while signed out
+  userId String?
+
+  // The fields below are optional because links created before accounts
+  // existed don't have them, and Prisma can't read a missing required field
+  // null means "on"
+  trackClicks   Boolean?
+  clicks        Int?
+  lastClickedAt DateTime?
+
+  @@index([userId])
 }

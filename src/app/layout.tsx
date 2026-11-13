@@ -1,5 +1,13 @@
 import type { Metadata } from "next";
 import { Roboto_Mono } from "next/font/google";
+import Link from "next/link";
+import {
+  ClerkProvider,
+  Show,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import "./globals.css";
 
 const robotoMono = Roboto_Mono({
@@ -13,12 +21,43 @@ export const metadata: Metadata = {
   description: "The world's best link shortener",
 };
 
+function Header() {
+  return (
+    <header className="flex items-center justify-end gap-4 px-8 pt-4 font-RobotoMono text-sm">
+      <Show when="signed-in">
+        <Link href="/" className="underline">
+          Shorten
+        </Link>
+        <Link href="/dashboard" className="underline">
+          My links
+        </Link>
+        <UserButton />
+      </Show>
+      <Show when="signed-out">
+        <SignInButton mode="modal">
+          <button className="underline">Sign in</button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <button className="rounded-md bg-gray-100 px-3 py-1 text-black hover:bg-gray-300">
+            Sign up
+          </button>
+        </SignUpButton>
+      </Show>
+    </header>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={robotoMono.variable}>
-      <body>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" className={robotoMono.variable}>
+        <body>
+          <Header />
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

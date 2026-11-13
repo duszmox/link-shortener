@@ -1,5 +1,8 @@
-import { createLink, URL_PATTERN } from "@/lib/links";
-import { checkUrlSafety } from "@/lib/url-safety";
+import { auth } from "@clerk/nextjs/server";
+import { createLink, SlugTakenError } from "@/lib/links";
+import { shortUrl } from "@/lib/short-url";
+import { getSlugError, URL_PATTERN } from "@/lib/slug";
+import { getUrlBlockMessage } from "@/lib/url-safety";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -11,34 +14,30 @@ export async function POST(req: Request) {
   if (!URL_PATTERN.test(url)) {
     return Response.json({ message: "Invalid url" }, { status: 400 });
   }
-
-  // Let the link through if TypeSafe is unreachable.
-  try {
-    const safety = await checkUrlSafety(url);
-    console.log("url safety: ", safety);
-    if (safety.blocked) {
-      return Response.json(
-        {
-          message: `This url looks like a ${safety.reason} site and can't be shortened`,
-        },
-        { status: 403 }
-      );
-    }
-  } catch (err) {
-    console.log("url safety check failed: ", err);
+  const customSlug = typeof slug === "string" && slug !== "" ? slug : null;
+  const slugError = customSlug && getSlugError(customSlug);
+  if (slugError) {
+    return Response.json({ message: slugError }, { status: 400 });
   }
 
+  const blockMessage = await getUrlBlockMessage(url);
+  if (blockMessage) {
+    return Response.json({ message: blockMessage }, { status: 403 });
+  }
+
+  // Signed-in users own their links; anonymous links still work
+  const { userId } = await auth();
+
   try {
-    const link = await createLink({
-      url,
-      slug: typeof slug === "string" && slug !== "" ? slug : null,
-      blocked,
-    });
+    const link = await createLink({ url, slug: customSlug, blocked, userId });
     return Response.json({
       message: "Short link created",
-      link: "https://" + req.headers.get("host") + "/" + link.slug,
+      link: shortUrl(req.headers, link.slug),
     });
   } catch (err) {
+    if (err instanceof SlugTakenError) {
+      return Response.json({ message: err.message }, { status: 409 });
+    }
     console.error(err);
     return Response.json(
       { message: "Short link not created", error: String(err) },
