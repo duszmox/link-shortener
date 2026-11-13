@@ -1,52 +1,37 @@
-"use client";
+import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+import { createLinkChallenge } from "@/lib/altcha";
+import { getLinkBySlug } from "@/lib/links";
+import { SLUG_PATTERN } from "@/lib/slug";
+import { LinkCheck } from "./link-check";
 
-import { useEffect, useRef } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
-import Cookies from "js-cookie";
-import { useConsent } from "@/lib/cookie-consent";
+export const metadata: Metadata = {
+  title: "Checking your browser | cock.hu",
+  robots: { index: false, follow: false },
+};
 
-export default function Captcha() {
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const consent = useConsent();
-  // Google's script (and its cookies) only loads with the visitor's consent
-  const recaptchaAllowed = consent?.recaptcha === true;
+export default async function CaptchaPage({
+  searchParams,
+}: PageProps<"/captcha">) {
+  const { slug } = await searchParams;
+  if (typeof slug !== "string" || !SLUG_PATTERN.test(slug)) notFound();
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    recaptchaRef.current?.execute();
-  };
+  const link = await getLinkBySlug(slug);
+  if (!link) notFound();
+  // Unrestricted links need no check (e.g. the owner turned it off since)
+  if (!link.blocked) redirect(link.url);
 
-  const onReCAPTCHAChange = (captchaCode: string | null) => {
-    // A null code means the reCAPTCHA expired
-    if (!captchaCode) return;
-    // Reset so it can be executed again
-    recaptchaRef.current?.reset();
-  };
-
-  // autosubmit the form and redirect to the url from the cookie
-  useEffect(() => {
-    // Wait until the consent cookie has been read on the client
-    if (consent === undefined) return;
-    const url = Cookies.get("url");
-    if (!url) return;
-    if (recaptchaAllowed) {
-      if (!recaptchaRef.current) return;
-      recaptchaRef.current.execute();
-    }
-    window.location.href = url;
-  }, [consent, recaptchaAllowed]);
+  const challenge = await createLinkChallenge(slug);
 
   return (
-    <form onSubmit={handleSubmit}>
-      {recaptchaAllowed && (
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          size="invisible"
-          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-          onChange={onReCAPTCHAChange}
-        />
-      )}
-      <button type="submit">Loading...</button>
-    </form>
+    <main className="mx-auto flex max-w-xl flex-col items-center gap-6 px-8 py-24 text-center">
+      <h1 className="text-2xl font-bold uppercase">Checking your browser</h1>
+      <p className="text-gray-400">
+        The creator of this link asked for a quick bot check. Your browser
+        solves a small puzzle on its own, then you&apos;re sent on your way.
+        No cookies, nothing sent to third parties.
+      </p>
+      <LinkCheck slug={slug} challenge={challenge} />
+    </main>
   );
 }

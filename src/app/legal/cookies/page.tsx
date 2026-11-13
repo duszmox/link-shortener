@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { CookieSettingsButton } from "@/app/cookie-banner";
 
 export const metadata: Metadata = {
   title: "Cookie policy | cock.hu",
@@ -30,29 +29,6 @@ const necessary: CookieRow[] = [
     provider: "cock.hu (via Clerk)",
     purpose: "Short-lived sign-in handshake and redirect state.",
     duration: "Seconds to minutes, or the browser session",
-  },
-  {
-    name: "url",
-    provider: "cock.hu",
-    purpose:
-      "Carries the destination of a restricted short link to the check page.",
-    duration: "Browser session",
-  },
-  {
-    name: "cookie_consent",
-    provider: "cock.hu",
-    purpose: "Remembers your cookie choice and when you made it.",
-    duration: "6 months",
-  },
-];
-
-const optional: CookieRow[] = [
-  {
-    name: "_GRECAPTCHA and Google account cookies",
-    provider: "Google LLC (reCAPTCHA)",
-    purpose:
-      "Bot detection on short links their creator restricted. Google receives your IP address and browser data and processes them under its own privacy policy, including transfers to the USA under the EU-US Data Privacy Framework.",
-    duration: "Up to 6 months",
   },
 ];
 
@@ -90,14 +66,16 @@ export default function CookiePolicy() {
 
       <p className="mb-4">
         Cookies are small files a website stores in your browser. We only use
-        the cookies needed to run the site, unless you agree to more. We
-        don&apos;t use analytics or advertising cookies.
+        the cookies needed to run the site, so we don&apos;t ask for consent.
+        We don&apos;t use analytics or advertising cookies.
       </p>
       <p className="mb-8">
-        You can change or withdraw your consent at any time, as easily as you
-        gave it: <CookieSettingsButton />. Withdrawing consent doesn&apos;t
-        affect anything done before. Cookies Google has already set stay on
-        google.com until they expire or you delete them in your browser.
+        Links their creator restricted show a bot check first. It&apos;s{" "}
+        <a href="https://altcha.org" className="underline">
+          ALTCHA
+        </a>
+        , hosted by us: your browser solves a small puzzle and sends the answer
+        back to us. It sets no cookies and nothing goes to third parties.
       </p>
 
       <h2 className="mb-2 font-RobotoMono text-xl font-semibold uppercase">
@@ -108,15 +86,6 @@ export default function CookiePolicy() {
         require consent (Art. 5(3) ePrivacy Directive).
       </p>
       <CookieTable rows={necessary} />
-
-      <h2 className="mb-2 font-RobotoMono text-xl font-semibold uppercase">
-        Optional, only with your consent
-      </h2>
-      <p className="mb-4 text-gray-400">
-        Loaded only after you accept them. If you don&apos;t, restricted links
-        still open, just without the Google check.
-      </p>
-      <CookieTable rows={optional} />
     </main>
   );
 }

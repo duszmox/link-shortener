@@ -23,3 +23,15 @@ export function isIpBlocked(ip: string): boolean {
   if (ipLong === null) return false;
   return ranges.some(([start, end]) => ipLong >= start && ipLong <= end);
 }
+
+// First hop of x-forwarded-for, as set by the hosting proxy
+export function getClientIp(headers: Headers): string | null {
+  return (
+    headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    headers.get("x-real-ip") ??
+    null
+  );
+}
+
+// Where visitors from blocklisted IPs end up
+export const RICKROLL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";

@@ -18,7 +18,8 @@ Create a `.env` file:
 
 ```bash
 DATABASE_URL="mongodb+srv://..."
-NEXT_PUBLIC_RECAPTCHA_SITE_KEY="..."
+# Signs the bot-check challenges on restricted links: `openssl rand -hex 32`
+ALTCHA_HMAC_SECRET="..."
 TYPESAFE_API_KEY="..."
 # From https://dashboard.clerk.com (API keys). In development you can leave these
 # out and Clerk runs in keyless mode with temporary keys.
@@ -73,5 +74,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - `src/proxy.ts` – resolves `/<slug>` and redirects to the target URL; every other path goes
   through Clerk. Links created with "Restrict from malicious IPs" redirect visitors from
   blocklisted IPs (`src/lib/blocked-ip-ranges.ts`) away, and send everyone else through
-  `/captcha` first. Clicks on links that have an owner are counted after the redirect is sent.
+  `/captcha?slug=...` first. That page runs a self-hosted [ALTCHA](https://altcha.org)
+  proof-of-work (`src/lib/altcha.ts`); the destination is only returned by the
+  `unlockLink` server action once the solution verifies. Clicks on links that have an owner are counted after the redirect is sent.
 - `src/lib/slug.ts` – slug rules, including the reserved slugs that the app's own pages use

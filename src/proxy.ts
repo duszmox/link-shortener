@@ -4,21 +4,11 @@ import {
   type NextFetchEvent,
   type NextRequest,
 } from "next/server";
-import { isIpBlocked } from "@/lib/ip-blocklist";
+import { getClientIp, isIpBlocked, RICKROLL } from "@/lib/ip-blocklist";
 import { getLinkBySlug, recordClick, shouldTrackClicks } from "@/lib/links";
 import { slugFromPath } from "@/lib/slug";
 
-const RICKROLL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-
 const clerk = clerkMiddleware();
-
-function getClientIp(req: NextRequest) {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    req.headers.get("x-real-ip") ??
-    null
-  );
-}
 
 async function resolveShortLink(
   req: NextRequest,
@@ -35,7 +25,7 @@ async function resolveShortLink(
   if (!data) return null;
 
   if (data.blocked) {
-    const ip = getClientIp(req);
+    const ip = getClientIp(req.headers);
     if (ip && isIpBlocked(ip)) {
       return NextResponse.redirect(RICKROLL);
     }
@@ -49,9 +39,10 @@ async function resolveShortLink(
   if (!data.blocked) {
     return NextResponse.redirect(new URL(data.url));
   }
-  const res = NextResponse.redirect(new URL("/captcha", req.url));
-  res.cookies.set("url", data.url);
-  return res;
+  // The destination stays on the server until the browser passes the check
+  const check = new URL("/captcha", req.url);
+  check.searchParams.set("slug", data.slug);
+  return NextResponse.redirect(check);
 }
 
 export async function proxy(req: NextRequest, event: NextFetchEvent) {

@@ -18,7 +18,9 @@ export async function GET(
       }
     );
   }
-  // Owner and click stats are private
-  const { id, createdAt, url, blocked } = data;
+  // Owner and click stats are private. Restricted links only reveal their
+  // destination after the bot check on /captcha, so it's withheld here too.
+  const { id, createdAt, blocked } = data;
+  const url = blocked ? null : data.url;
   return Response.json({ id, createdAt, url, slug: data.slug, blocked });
 }

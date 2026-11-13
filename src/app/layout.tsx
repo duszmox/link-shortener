@@ -9,7 +9,6 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { clerkAppearance } from "@/lib/clerk-appearance";
-import { CookieBanner, CookieSettingsButton } from "./cookie-banner";
 import "./globals.css";
 
 const robotoMono = Roboto_Mono({
@@ -55,7 +54,6 @@ function Footer() {
       <Link href="/legal/cookies" className="underline">
         Cookie policy
       </Link>
-      <CookieSettingsButton />
     </footer>
   );
 }
@@ -70,7 +68,6 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
-          <CookieBanner />
         </body>
       </html>
     </ClerkProvider>
